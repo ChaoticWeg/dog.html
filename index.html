@@ -1,0 +1,83 @@
+<!DOCTYPE html5>
+<html>
+
+	<head>
+    <title>dog.html | ChaoticWeg</title>
+    
+		<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+		<script type="text/javascript">
+			var DOG_URL = "https://random.dog/woof.json";
+			var DOG_REQ = "GET"
+			
+			function setDogUrl(res) {
+				$("#console").text("New dog! Source: " + res.url);
+				
+				if (res.url.toUpperCase().endsWith(".JPG")) {
+					console.log("jpg");
+					setDogJpg(res.url);
+				} else if (res.url.toUpperCase().endsWith(".MP4")) {
+					console.log("mp4");
+					setDogMp4(res.url);
+				} else if (res.url.toUpperCase().endsWith(".WEBM")) {
+					console.log("webm");
+					setDogMp4(res.url);
+				} else {
+					console.error("invalid url: " + res.url);
+				}
+				
+				$("#btn-get-dog").prop("disabled", false);
+			}
+			
+			function setDogJpg(url) {
+				$("#dog-mp4").attr("hidden", true);
+				$("#dog-jpg").attr("src", url);
+				$("#dog-jpg").removeAttr("hidden");
+			}
+			
+			function setDogMp4(url) {
+				$("#dog-jpg").attr("hidden", true);
+				$("#dog-mp4").attr("src", url);
+				$("#dog-mp4").removeAttr("hidden");
+			}
+			
+			function getDog() {
+				hideDog();
+				$("#btn-get-dog").prop("disabled", true);
+				$.ajax({
+						url: DOG_URL,
+						type: DOG_REQ,
+						success: setDogUrl,
+						error: console.log
+				});
+			}
+			
+			function hideDog() {
+				$("#div-loading").removeAttr("hidden");
+				$("#div-dog").attr("hidden", true);
+			}
+			
+			function showDog() {
+				$("#div-loading").attr("hidden", true);
+				$("#div-dog").removeAttr("hidden");
+			}
+
+			$(() => {
+				$("#btn-get-dog").click(getDog);
+				$("#dog-jpg").on("load", showDog);
+				$("#dog-mp4").on("loadstart", showDog);
+				getDog();
+			});
+		</script>
+	</head>
+
+	<body>
+		<button id="btn-get-dog">Get dog</button>
+		<pre id="console"></pre>
+		<div id="div-dog" style="margin-top:2em;">
+			<img id="dog-jpg" height="50%" hidden>
+			<video autoplay muted id="dog-mp4" height="50%" hidden>
+		</div>
+		<pre id="div-loading" hidden>Fetching dog...</pre>
+	</body>
+
+</html>
